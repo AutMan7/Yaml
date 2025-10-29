@@ -3,7 +3,7 @@
 # 地址：https://github.com/AutMan7/Yaml
 # 日期：2025年10月29日
 # 说明：Clash/Nikki 配置，适配多区域节点、场景分流，优化冗余与可读性
-
+# 引用Seven1echo大佬的成果！
 
 # ==================== 节点订阅 ===================
 # 订阅锚点：统一订阅参数（24h直连更新、300s健康检测）
@@ -189,8 +189,8 @@ proxy-groups:
 # ==================== 规则路由 ====================
 rules:
   # 个人补充
-  #- RULE-SET,Seven1_DIRECT,DIRECT
-  #- RULE-SET,Seven1_REJECT,REJECT
+  #- RULE-SET,AutMan7_DIRECT,DIRECT
+  #- RULE-SET,AutMan7_REJECT,REJECT
   
   # 场景分流
   - RULE-SET,private_domain,DIRECT
@@ -241,8 +241,8 @@ rule-providers:
   cn_domain:         { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
 
   # 文本规则集模板
-  Seven1_DIRECT:     { <<: *class, url: "https://raw.githubusercontent.com/Seven1echo/Yaml/refs/heads/main/list/DIRECT.list"}
-  Seven1_REJECT:     { <<: *class, url: "https://raw.githubusercontent.com/Seven1echo/Yaml/refs/heads/main/list/REJECT.list"}
+  AutMan7_DIRECT:     { <<: *class, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/DIRECT.list"}
+  AutMan7_REJECT:     { <<: *class, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/REJECT.list"}
 
   # IP地址规则
   cn_ip:             { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
