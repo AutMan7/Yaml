@@ -5,9 +5,9 @@ DOMAIN-SUFFIX,360.cn
 DOMAIN-SUFFIX,qihoo.com
   
 # 360 搜索服务
-DOMAIN-SUFFIX,so.com
-DOMAIN-SUFFIX,sou.com
-DOMAIN-SUFFIX,haosou.com
+#DOMAIN-SUFFIX,so.com
+#DOMAIN-SUFFIX,sou.com
+#DOMAIN-SUFFIX,haosou.com
   
 # 360 安全软件与服务
 DOMAIN-SUFFIX,360safe.com
