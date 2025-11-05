@@ -1,3 +1,18 @@
-个人自用，欢迎体验。
+### Hi there 👋 I'm AutMan
 
-在各位大佬的成果基础上，结合自己的实际需求做了些调整优化，算是站在“大佬们的肩膀上”做了点适配工作。
+<!--介绍 -->
+<div style="max-width: 600px; margin: 0 10px 20px; line-height: 1.5;">
+  <p> • 本项目以纯自用为主，也欢迎大家体验。</p>
+  <p> • 基于Seven1以及各位大佬的成果开发，结合自身实际需求做了部分调整优化，算是站在 “巨人肩膀” 上，补充了些贴合自己场景的适配。</p>
+</div>
+
+<!-- 使用说明-->
+<div style="max-width: 600px; margin: 0 10px 20px; line-height: 1.5;">
+  <p> • 使用说明：</p>
+  <p>   1.本文件适用于 Clash/Nikki 插件。</p>
+  <p>   2.使用前需补充完整 “订阅链接” 与 “机场名”，并将 “nameserver” 修改为运营商提供的 DNS 地址。</p>
+</div>
+
+
+**ZASHBOARD界面：**
+<img width="1080" height="1615" alt="FireShot Capture 003 - zashboard - 代理 -  10 0 0 1" src="https://github.com/user-attachments/assets/83883e55-9914-4d79-b0ff-1f50c80f9d59" />
