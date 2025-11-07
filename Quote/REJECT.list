@@ -5,3 +5,5 @@ DOMAIN-KEYWORD,so.com
 DOMAIN-SUFFIX,qhimg.com
 DOMAIN-SUFFIX,qihu-cdn.com
 DOMAIN-SUFFIX,360tpcdn.com
+# 农行防代理检测
+DOMAIN-SUFFIX,msmp.abchina.com.cn
