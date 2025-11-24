@@ -1,6 +1,6 @@
 # 域名后缀匹配
-# POLYUN
-DOMAIN-SUFFIX,apple-bing.sbs
+# Apple
+DOMAIN-SUFFIX,*.apple.com
 
 # 域名关键字匹配
 #DOMAIN-KEYWORD,apple-bing
