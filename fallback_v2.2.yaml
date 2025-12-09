@@ -1,5 +1,5 @@
 # 名称： AutMan7_fallback
-# 版本： V2.2
+# 版本： V2.3
 # 日期： 2025年12月8日
 # 地址： https://github.com/AutMan7/Yaml
 # 说明： ①本文件适用于 Clash/Nikki 插件（支持仅内核使用）； ②使用前需补充完整 “订阅链接” 与 “机场名”，并将 “nameserver” 修改为运营商提供的 DNS 地址。
@@ -11,14 +11,14 @@ Anchor_PR: &Anchor_PR {type: http, interval: 86400, proxy: DIRECT, health-check:
 # ②出站锚点
 Anchor_OB: &Anchor_OB {type: select, proxies: [🚀 一键代理, 🔄 香港故转, 🔄 台湾故转, 🔄 日本故转, 🔄 新加坡故转, 🔄 美国故转, 🔄 欧洲故转, 🛬 香港自动, 🛬 台湾自动, 🛬 日本自动, 🛬 新加坡自动, 🛬 美国自动, 🛬 欧洲自动, 🇭🇰 香港手动, 🇹🇼 台湾手动, 🇯🇵 日本手动, 🇸🇬 新加坡手动, 🇺🇸 美国手动, 🇪🇺 欧洲手动, 🌐 其他手动, DIRECT, REJECT]}
 # ③策略锚点
-Anchor_HS: &Anchor_HS {type: select, interval: 300, include-all: true, url: 'https://www.gstatic.com/generate_204'}
-Anchor_FB: &Anchor_FB {type: fallback, interval: 300, lazy: true, url: 'https://www.gstatic.com/generate_204', hidden: true}
-Anchor_UT: &Anchor_UT {type: url-test, include-all: true, tolerance: 50, interval: 300, timeout: 5000, url: 'https://www.gstatic.com/generate_204', hidden: true}
+Anchor_HS: &Anchor_HS {type: select, url: 'https://www.gstatic.com/generate_204', include-all: true}
+Anchor_FB: &Anchor_FB {type: fallback, url: 'https://www.gstatic.com/generate_204', interval: 300, lazy: true, timeout: 2000, max-failed-times: 3, hidden: true, include-all: true}
+Anchor_UT: &Anchor_UT {type: url-test, url: 'https://www.gstatic.com/generate_204', interval: 300, lazy: true, tolerance: 50, timeout: 2000, max-failed-times: 3, hidden: true, include-all: true}
 # ④节点锚点
 Anchor_HK: &Anchor_HK "(?i)^(?=.*(?:香港|🇭🇰|\bHK\b|Hong|HKG)).*$"
-Anchor_TW: &Anchor_TW "(?i)^(?=.*(?:台湾||台湾|台||TW|taiwan|Taiwan|台灣|TWN|🇹🇼|\bTW\b|tai|TPE|TSA|KHH)).*$"
+Anchor_TW: &Anchor_TW "(?i)^(?=.*(?:台湾|🇹🇼|\bTW\b|tai|TPE|TSA|KHH)).*$"
 Anchor_JP: &Anchor_JP "(?i)^(?=.*(?:日本|🇯🇵|\bJP\b|Japan|NRT|HND|KIX|CTS|FUK)).*$"
-Anchor_SG: &Anchor_SG "(?i)^(?=.*(?:新加坡|SG|坡|狮城|🇸🇬|\bSG\b|Sing|SIN|XSP)).*$"
+Anchor_SG: &Anchor_SG "(?i)^(?=.*(?:新加坡|🇸🇬|\bSG\b|Sing|SIN|XSP)).*$"
 Anchor_US: &Anchor_US "(?i)^(?=.*(?:美国|纽约|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|🇺🇸|\bUS\b|\bUSA\b|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD)).*$"
 Anchor_EU: &Anchor_EU "(?i)^(?=.*(?:奥地利|比利时|保加利亚|克罗地亚|塞尔维亚|捷克|丹麦|爱沙尼亚|芬兰|法国|德国|希腊|匈牙利|爱尔兰|意大利|拉脱维亚|立陶宛|卢森堡|马耳他|荷兰|波兰|葡萄牙|罗马尼亚|斯洛伐克|斯洛文尼亚|西班牙|瑞典|英国|🇧🇪|🇨🇿|🇩🇰|🇫🇮|🇫🇷|🇩🇪|🇮🇪|🇮🇹|🇱🇹|🇱🇺|🇳🇱|🇵🇱|🇸🇪|🇬🇧|CDG|FRA|AMS|MAD|BCN|FCO|MUC|BRU)).*$"
 Anchor_OT: &Anchor_OT "(?i)^(?!.*(?:DIRECT|REJECT|直连|拒绝|香港|🇭🇰|\bHK\b|Hong|HKG|台湾|🇹🇼|\bTW\b|tai|TPE|TSA|KHH|日本|🇯🇵|\bJP\b|Japan|NRT|HND|KIX|CTS|FUK|新加坡|🇸🇬|\bSG\b|Sing|SIN|XSP|美国|纽约|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|🇺🇸|\bUS\b|\bUSA\b|SJC|JFK|LAX|ORD|ATL|DFW|SFO|MIA|SEA|IAD|奥地利|比利时|保加利亚|克罗地亚|塞尔维亚|捷克|丹麦|爱沙尼亚|芬兰|法国|德国|希腊|匈牙利|爱尔兰|意大利|拉脱维亚|立陶宛|卢森堡|马耳他|荷兰|波兰|葡萄牙|罗马尼亚|斯洛伐克|斯洛文尼亚|西班牙|瑞典|英国|🇧🇪|🇨🇿|🇩🇰|🇫🇮|🇫🇷|🇩🇪|🇮🇪|🇮🇹|🇱🇹|🇱🇺|🇳🇱|🇵🇱|🇸🇪|🇬🇧|CDG|FRA|AMS|MAD|BCN|FCO|MUC|BRU)).*$"
@@ -32,6 +32,9 @@ Anchor_CL: &Anchor_CL {type: http, interval: 86400, behavior: classical, format:
 # 将 “订阅链接” 与 “机场名” 替换为所用机场信息； 订阅条数不够可新增，注意开头缩进，不同条数前方 “机场名” 不能重复； 末尾的 “机场名” 作用为每个节点添加机场名称前缀，可自定义。
 proxy-providers:
   机场名: {<<: *Anchor_PR, url: '订阅链接', override: {additional-prefix: '[机场名] '}}
+  
+  
+  
 
 # 自建节点信息
 proxies:
@@ -88,7 +91,7 @@ geox-url:                                                                       
   asn:     "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
 
 # 管理面板
-external-ui-url: https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
 external-ui-name: zashboard                                                            # 面板名称
 external-ui: ui                                                                        # 面板目录
 external-controller: 0.0.0.0:9090                                                      # 控制地址  局域网可访
@@ -192,8 +195,8 @@ proxy-groups:
 # ※※※※※※※※※※※※※ 规则匹配 ※※※※※※※※※※※※※
 rules:
   # 个人补充
-  - RULE-SET,AutMan7_DIRECT,DIRECT
-  - RULE-SET,AutMan7_REJECT,REJECT
+  - RULE-SET,AutMan7_direct,DIRECT
+  - RULE-SET,AutMan7_reject,REJECT
   - DOMAIN-KEYWORD,apple.com,DIRECT
   
   # 场景分流
@@ -210,11 +213,11 @@ rules:
   - RULE-SET,telegram_domain,📲 Telegram
   - RULE-SET,netflix_domain,🎥 NETFLIX
   - RULE-SET,paypal_domain,💶 PayPal
+  - RULE-SET,geolocation-!cn,🚀 一键代理
+  - RULE-SET,cn_domain,DIRECT
   - RULE-SET,google_ip,🍀 Google,no-resolve
   - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
   - RULE-SET,telegram_ip,📲 Telegram,no-resolve
-  - RULE-SET,geolocation-!cn,🚀 一键代理
-  - RULE-SET,cn_domain,DIRECT
   - RULE-SET,cn_ip,DIRECT
   - MATCH,🐟 漏网之鱼
 
@@ -222,8 +225,8 @@ rules:
 # 规则来源
 rule-providers: 
   # 文本规则
-  AutMan7_DIRECT:     { <<: *class, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/DIRECT.list"}
-  AutMan7_REJECT:     { <<: *class, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/REJECT.list"}
+  AutMan7_direct:     { <<: *Anchor_CL, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/DIRECT.list"}
+  AutMan7_reject:     { <<: *Anchor_CL, url: "https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/Quote/REJECT.list"}
 
   # 域名规则
   private_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
