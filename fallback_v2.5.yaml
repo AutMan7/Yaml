@@ -1,10 +1,10 @@
 # 名称： AutMan7_fallback
-# 版本： V2.4
-# 日期： 2025年12月26日
+# 版本： V2.5
+# 日期： 2026年1月4日
 # 地址： https://github.com/AutMan7/Yaml
-# 说明： ①本文件适用于 Clash/Nikki 插件（支持仅内核使用）； ②使用前需补充完整 “订阅链接” 与 “机场名”，并将 “nameserver” 修改为运营商提供的 DNS 地址。
- 
- 
+# 说明： ①本文件适用于 Clash/Nikki 插件（支持仅内核使用）； ②使用前需补充完整 “订阅链接” 与 “机场名”，并将 “nameserver” 修改为运营商提供的 DNS 地址; ③已隐藏“故障转移”、“延迟自选”这两个策略组，使用时手动选取对应地区节点即可。
+
+
 # ※※※※※※※※※※※※※※※ 锚点区域 ※※※※※※※※※※※※※※※
 # ① 订阅锚点
 Anchor_PR: &Anchor_PR {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: 'https://www.g.cn/generate_204', interval: 300}, filter: "^(?!.*(群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic|GB|Expire)).*$"}
@@ -63,37 +63,14 @@ find-process-mode: 'off'                                                        
 global-client-fingerprint: chrome                                                      # 指纹识别  客户端伪装浏览器的特征
 keep-alive-interval: 15                                                                # 保活间隔  防止连接断开
 keep-alive-idle: 600                                                                   # 空闲超时  释放闲置连接）
-
-# 认证配置
-authentication:
-  - ""                                                                                 # 认证密码  启用时填写，格式：“用户名:密码”）
+authentication:                                                                        # 认证密码
+  - ""                                                                                 # 密码格式  启用时填写：“用户名:密码”
 skip-auth-prefixes:                                                                    # 免认网段  家庭局域网
   - ::1/128                                                                            # 本地回环  IPV6 地址
   - 127.0.0.1/8                                                                        # 本地回环  IPV4 地址
   - 10.0.0.0/8                                                                         # A类内网
   - 172.16.0.0/12                                                                      # B类内网
   - 192.168.0.0/16                                                                     # C类内网  覆盖所有192.168.x.0网段
-
-# 地理数据配置
-geodata-mode: false                                                                    # 加载模式  true=使用DAT格式，false=使用MMDB格式
-geodata-loader: standard                                                               # 标准加载  兼容大多数环境）
-geodata-cache: true                                                                    # 缓存加载  减少重复IO开销
-geo-auto-update: true                                                                  # 自动更新  启用
-geo-update-interval: 24                                                                # 更新间隔  24小时
-geo-update-timeout: 30                                                                 # 更新超时  时间30秒，避免卡死
-geo-update-retry: 2                                                                    # 更新次数  重试2次，提升成功率
-geox-url:                                                                              # 地理数据  下载链接
-  geoip:   "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
-  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
-  mmdb:    "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.metadb"
-  asn:     "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
-
-# 管理面板
-external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
-external-ui-name: zashboard                                                            # 面板名称
-external-ui: ui                                                                        # 面板目录
-external-controller: 0.0.0.0:9090                                                      # 控制地址  局域网可访
-secret: ""                                                                             # 面板密码  启用时填写，格式："密码"
 
 # 配置存储
 profile:
@@ -103,9 +80,30 @@ profile:
 # 流量嗅探
 sniffer:
   enable: true                                                                         # 启用嗅探  提升分流准确性
-  override-destination: false                                                          # 保留地址  不覆盖目标地址，避免流量异常
-  force-dns-mapping: true                                                              # 强制映射  Fake-IP模式必备
-  parse-pure-ip: true                                                                  # 解析流量  识别纯IP直连的服务
+  sniff:                                                                               # 要嗅探的  协议和端口
+    HTTP:
+      ports: [80, 8080-8880]                                                           # 尝试解析  这些端口范围上 HTTP 报文以提取 Host
+      override-destination: true                                                       # 成功解析  Host 后用域名信息覆盖/标记目标，便于按域名路由
+    TLS:
+      ports: [443, 8443]                                                               # 尝试解析 在这些端口上从 TLS 握手抓取 SNI 进行域名识别 
+    QUIC:
+      ports: [443, 8443]                                                               # 尝试解析 在这些端口上尝试对 QUIC（UDP）进行域名嗅探（支持受限）
+  skip-domain:                                                                         # 跳过嗅探
+    - "Mijia Cloud"                                                                    # 米家服务
+    - "dlg.io.mi.com"                                                                  # 米家服务
+    - "*.push.apple.com"                                                               # 苹果推送
+    - "*.apple.com"                                                                    # 苹果推送
+    - "*.wechat.com"                                                                   # 腾讯服务
+    - "*.qpic.cn"                                                                      # 腾讯服务
+    - "*.qq.com"                                                                       # 腾讯服务
+    - "*.wechatapp.com"                                                                # 腾讯服务
+
+# 管理面板
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
+external-ui-name: zashboard                                                            # 面板名称
+external-ui: ui                                                                        # 面板目录
+external-controller: 0.0.0.0:9090                                                      # 控制地址  局域网可访
+secret: ""                                                                             # 面板密码  启用时填写，格式："密码"
 
 # TUN配置
 tun:
@@ -126,16 +124,16 @@ dns:
   ipv6: true                                                                           # IPv6解析
   enhanced-mode: fake-ip                                                               # 增强模式  Fake-IP模式（核心：本地解析+无泄漏）
   fake-ip-range: 28.0.0.1/8                                                            # 虚拟地址  Fake-IP地址池（默认范围）
-  fake-ip-filter-mode: blacklist                                                       # 过滤模式  黑名列表
+  fake-ip-filter-mode: blacklist                                                       # 过滤模式  黑名单模式表示如果匹配成功则不返回 Fake-IP
   fake-ip-filter:                                                                      # 排除解析  Fake-IP的域名（直连解析，如本地服务）
     - "rule-set:private_domain"                                                        # 国内域名  引用私有域名，这些域名走真实IP解析
     - "rule-set:cn_domain"                                                             # 国内域名  引用国内域名，这些域名走真实IP解析
     - "+.msftconnecttest.com"                                                          # 连接检测  Windows网络连接检测域名，避免系统误判网络状态
     - "+.msftncsi.com"                                                                 # 状态检测  Windows网络状态指示器域名，确保NCSI检测正常
     - "time.*.com"                                                                     # 时间同步  常见的网络时间同步(NTP)服务器域名，保证时间校准准确
-  nameserver:                                                                          # 解析服务  请使用运营商提供的 DNS
+  nameserver:                                                                          # 解析服务  
     - 218.4.4.4
-    - 218.2.2.2
+    - 218.2.2.2                                                                      # 解析服务  请更改为运营商提供的 DNS
 
 
 # ※※※※※※※※※※※※※※※ 代理策略组 ※※※※※※※※※※※※※※※
@@ -148,9 +146,15 @@ proxy-groups:
   - {name: GitHub,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/GitHub.png}
   - {name: OneDrive,  <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/OneDrive.png}
   - {name: Microsoft, <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Microsoft.png}
+  - {name: AppleTV,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/AppleTV.png}
+  - {name: Apple,     <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Apple.png}
   - {name: TikTok,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/TikTok.png}
+  - {name: Twitter,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Twitter.png}
   - {name: Telegram,  <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Telegram.png}
   - {name: Netflix,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Netflix.png}
+  - {name: Disney,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Disney.png}
+  - {name: Spotify,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Spotify.png} 
+  - {name: BiliBili,  <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/BiliBili.png}
   - {name: PayPal,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/PayPal.png}
   - {name: Speedtest, <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Speedtest.png}
   - {name: 漏网之鱼,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/MATCH.png}
@@ -197,10 +201,10 @@ proxy-groups:
 
 # ※※※※※※※※※※※※※※※ 规则匹配 ※※※※※※※※※※※※※※※
 rules:
-  # 个人补充(如不涉及请删除或注释下方两行)
+  # 个人补充(如不涉及请删除或注释下方)
   - RULE-SET,AutMan7_direct,DIRECT
-  - RULE-SET,AutMan7_reject,REJECT
-  - DOMAIN-KEYWORD,apple.com,DIRECT
+  - RULE-SET,AutMan7_reject,REJECT                                                      # 个人需求  拒绝规则
+  - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT                                          # 阻止连接  QUIC
   
   # 场景分流
   - RULE-SET,private_ip,DIRECT,no-resolve
@@ -212,15 +216,23 @@ rules:
   - RULE-SET,google_domain,Google
   - RULE-SET,onedrive_domain,OneDrive
   - RULE-SET,microsoft_domain,Microsoft
+  - RULE-SET,appletv_domain,AppleTV
+  - RULE-SET,apple_domain,Apple
   - RULE-SET,tiktok_domain,TikTok
+  - RULE-SET,twitter_domain,Twitter
   - RULE-SET,telegram_domain,Telegram
   - RULE-SET,netflix_domain,Netflix
+  - RULE-SET,disney_domain,Disney
+  - RULE-SET,spotify_domain,Spotify
+  - RULE-SET,bilibili_domain,BiliBili
   - RULE-SET,paypal_domain,PayPal
   - RULE-SET,geolocation-!cn,一键代理
   - RULE-SET,cn_domain,DIRECT
   - RULE-SET,google_ip,Google,no-resolve
+  - RULE-SET,apple_ip,Apple,no-resolve
   - RULE-SET,netflix_ip,Netflix,no-resolve
   - RULE-SET,telegram_ip,Telegram,no-resolve
+  - RULE-SET,twitter_ip,Twitter,no-resolve
   - RULE-SET,cn_ip,DIRECT
   - MATCH,漏网之鱼
 
@@ -240,17 +252,25 @@ rule-providers:
   google_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"}
   onedrive_domain:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
   microsoft_domain:  { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"}
+  appletv_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-tvplus.mrs"}
+  apple_domain:      { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.mrs"}
   tiktok_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"}
+  twitter_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs"}
   telegram_domain:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"}
   netflix_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"}
+  disney_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/disney.mrs"}
+  spotify_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"}
+  bilibili_domain:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.mrs"}
   paypal_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs"}
   geolocation-!cn:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain:         { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
 
   # IP规则
+  apple_ip:          { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo-lite/geoip/apple.mrs"}
   private_ip:        { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
   google_ip:         { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"}
   telegram_ip:       { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"}
+  twitter_ip:        { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs"}
   netflix_ip:        { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"}
   cn_ip:             { <<: *Anchor_IP, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
 
