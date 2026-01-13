@@ -1,6 +1,6 @@
 # 名称： AutMan7_fallback
-# 版本： V2.5
-# 日期： 2026年1月4日
+# 版本： V2.6
+# 日期： 2026年1月13日
 # 地址： https://github.com/AutMan7/Yaml
 # 说明： ①本文件适用于 Clash/Nikki 插件（支持仅内核使用）； ②使用前需补充完整 “订阅链接” 与 “机场名”，并将 “nameserver” 修改为运营商提供的 DNS 地址; ③已隐藏“故障转移”、“延迟自选”这两个策略组，使用时手动选取对应地区节点即可。
 
@@ -35,14 +35,8 @@ proxy-providers:
   机场名: {<<: *Anchor_PR, url: '订阅链接', override: {additional-prefix: '[机场名] '}}
 
 # 自建节点信息
-proxies:
-#  - name: Home
-#    type: ss
-#    server: ****.top                                                                  # 域名/IP
-#    port: ****                                                                        # 开放端口
-#    cipher: aes-256-gcm                                                               # 加密方式
-#    password: "****"                                                                  # 链接密码
-#    udp: true                                                                         # UDP支持
+proxies: 
+#  - {name: "Home", type: "ss", server: "****.top", port: "****", cipher: "aes-256-gcm", password: "****", udp: true}
 
 
 # ※※※※※※※※※※※※※※※ 核心配置 ※※※※※※※※※※※※※※※
@@ -50,7 +44,7 @@ proxies:
 port: 7890                                                                             # 代理端口  HTTP 
 socks-port: 7891                                                                       # 代理端口  SOCKS5
 redir-port: 7892                                                                       # 代理端口  透明代理
-mixed-port: 7893                                                                       # 代理端口  混合端口
+mixed-port: 1888                                                                       # 代理端口  混合端口
 tproxy-port: 7895                                                                      # 代理端口  TPROXY
 mode: rule                                                                             # 规则模式  规则分流
 ipv6: true                                                                             # 网络协议  IPV6协议
@@ -59,10 +53,12 @@ log-level: warning                                                              
 bind-address: '*'                                                                      # 网络接口  局域网设所有备
 unified-delay: true                                                                    # 统一延迟  减少波动
 tcp-concurrent: true                                                                   # 并发连接  提升多任务性能
-find-process-mode: 'off'                                                               # 查找进程  always=始终 off=关闭
 global-client-fingerprint: chrome                                                      # 指纹识别  客户端伪装浏览器的特征
 keep-alive-interval: 15                                                                # 保活间隔  防止连接断开
 keep-alive-idle: 600                                                                   # 空闲超时  释放闲置连接）
+profile:                                                                               # 配置存储
+  store-selected: true                                                                 # 保存选择  选择的节点/策略组
+  store-fake-ip: true                                                                  # 保存映射  提升DNS解析速度
 authentication:                                                                        # 认证密码
   - ""                                                                                 # 密码格式  启用时填写：“用户名:密码”
 skip-auth-prefixes:                                                                    # 免认网段  家庭局域网
@@ -71,32 +67,6 @@ skip-auth-prefixes:                                                             
   - 10.0.0.0/8                                                                         # A类内网
   - 172.16.0.0/12                                                                      # B类内网
   - 192.168.0.0/16                                                                     # C类内网  覆盖所有192.168.x.0网段
-
-# 配置存储
-profile:
-  store-selected: true                                                                 # 保存选择  选择的节点/策略组
-  store-fake-ip: true                                                                  # 保存映射  提升DNS解析速度
-
-# 流量嗅探
-sniffer:
-  enable: true                                                                         # 启用嗅探  提升分流准确性
-  sniff:                                                                               # 要嗅探的  协议和端口
-    HTTP:
-      ports: [80, 8080-8880]                                                           # 尝试解析  这些端口范围上 HTTP 报文以提取 Host
-      override-destination: true                                                       # 成功解析  Host 后用域名信息覆盖/标记目标，便于按域名路由
-    TLS:
-      ports: [443, 8443]                                                               # 尝试解析 在这些端口上从 TLS 握手抓取 SNI 进行域名识别 
-    QUIC:
-      ports: [443, 8443]                                                               # 尝试解析 在这些端口上尝试对 QUIC（UDP）进行域名嗅探（支持受限）
-  skip-domain:                                                                         # 跳过嗅探
-    - "Mijia Cloud"                                                                    # 米家服务
-    - "dlg.io.mi.com"                                                                  # 米家服务
-    - "*.push.apple.com"                                                               # 苹果推送
-    - "*.apple.com"                                                                    # 苹果推送
-    - "*.wechat.com"                                                                   # 腾讯服务
-    - "*.qpic.cn"                                                                      # 腾讯服务
-    - "*.qq.com"                                                                       # 腾讯服务
-    - "*.wechatapp.com"                                                                # 腾讯服务
 
 # 管理面板
 external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip
@@ -119,6 +89,8 @@ dns:
   enable: true                                                                         # 内置DNS
   listen: 0.0.0.0:1053                                                                 # 监听端口
   cache: true                                                                          # DNS缓存
+  cache-algorithm: arc                                                                 # DNS 缓存  自适应替换
+  cache-size: 4096                                                                     # 缓存条目  根据设备内存调整：4096-16384 常见
   cache-max-ttl: 3600                                                                  # 缓存期限
   cache-min-ttl: 60                                                                    # 最短缓存
   ipv6: true                                                                           # IPv6解析
@@ -128,12 +100,13 @@ dns:
   fake-ip-filter:                                                                      # 排除解析  Fake-IP的域名（直连解析，如本地服务）
     - "rule-set:private_domain"                                                        # 国内域名  引用私有域名，这些域名走真实IP解析
     - "rule-set:cn_domain"                                                             # 国内域名  引用国内域名，这些域名走真实IP解析
-    - "+.msftconnecttest.com"                                                          # 连接检测  Windows网络连接检测域名，避免系统误判网络状态
-    - "+.msftncsi.com"                                                                 # 状态检测  Windows网络状态指示器域名，确保NCSI检测正常
+    - ".msftconnecttest.com"                                                           # 连接检测  Windows网络连接检测域名，避免系统误判网络状态
+    - ".msftncsi.com"                                                                  # 状态检测  Windows网络状态指示器域名，确保NCSI检测正常
+    - "*.local"                                                                        # 本地服务  网络设备/服务（mDNS/局域网）
     - "time.*.com"                                                                     # 时间同步  常见的网络时间同步(NTP)服务器域名，保证时间校准准确
   nameserver:                                                                          # 解析服务  
-    - 218.4.4.4
-    - 218.2.2.2                                                                      # 解析服务  请更改为运营商提供的 DNS
+    - 218.4.4.4                                                                  # 解析服务  请更改为运营商提供的 DNS
+    - 221.5.88.88                                                                      # 解析服务  请更改为运营商提供的 DNS
 
 
 # ※※※※※※※※※※※※※※※ 代理策略组 ※※※※※※※※※※※※※※※
@@ -154,7 +127,6 @@ proxy-groups:
   - {name: Netflix,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Netflix.png}
   - {name: Disney,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Disney.png}
   - {name: Spotify,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Spotify.png} 
-  - {name: BiliBili,  <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/BiliBili.png}
   - {name: PayPal,    <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/PayPal.png}
   - {name: Speedtest, <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/Speedtest.png}
   - {name: 漏网之鱼,   <<: *Anchor_OB, icon: https://raw.githubusercontent.com/AutMan7/Yaml/refs/heads/main/icons/MATCH.png}
@@ -204,7 +176,6 @@ rules:
   # 个人补充(如不涉及请删除或注释下方)
   - RULE-SET,AutMan7_direct,DIRECT
   - RULE-SET,AutMan7_reject,REJECT                                                      # 个人需求  拒绝规则
-  - AND,((DST-PORT,443),(NETWORK,UDP)),REJECT                                          # 阻止连接  QUIC
   
   # 场景分流
   - RULE-SET,private_ip,DIRECT,no-resolve
@@ -224,7 +195,6 @@ rules:
   - RULE-SET,netflix_domain,Netflix
   - RULE-SET,disney_domain,Disney
   - RULE-SET,spotify_domain,Spotify
-  - RULE-SET,bilibili_domain,BiliBili
   - RULE-SET,paypal_domain,PayPal
   - RULE-SET,geolocation-!cn,一键代理
   - RULE-SET,cn_domain,DIRECT
@@ -260,7 +230,6 @@ rule-providers:
   netflix_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"}
   disney_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/disney.mrs"}
   spotify_domain:    { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.mrs"}
-  bilibili_domain:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.mrs"}
   paypal_domain:     { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs"}
   geolocation-!cn:   { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain:         { <<: *Anchor_DN, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
